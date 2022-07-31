@@ -1,0 +1,41 @@
+version: '3'
+services:
+    bagisto_nginx:
+        image: nginx
+        container_name: bagisto_nginx
+        restart: always
+        ports:
+            - 8081:80
+        volumes:
+            - ./:/var/www/bagisto
+            - ./docker/nginx:/etc/nginx/conf.d
+        links:
+            - bagisto_php
+    bagisto_php:
+        build: ./docker/php
+        container_name: bagisto_php
+        volumes:
+            - .:/var/www/bagisto
+        restart: always
+        links:
+            - bagisto_db
+        depends_on:
+            - bagisto_db
+    bagisto_db:
+        image: mysql
+        command: --default-authentication-plugin=mysql_native_password
+        container_name: bagisto_db
+        restart: always
+        ports:
+            - 33066:3306
+        environment:
+            MYSQL_ROOT_PASSWORD: '${DB_ROOT_PASSWORD}'
+            MYSQL_DATABASE: '${DB_DATABASE}'
+            MYSQL_USER: '${DB_USERNAME}'
+            MYSQL_PASSWORD: '${DB_PASSWORD}'
+            MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+        volumes:
+            - /srv/docker/mysql/bagisto:/var/lib/mysql
+
+volumes:
+    db:
