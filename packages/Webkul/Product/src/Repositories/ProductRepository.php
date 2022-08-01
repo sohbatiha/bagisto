@@ -351,7 +351,7 @@ class ProductRepository extends Repository
             'path'  => request()->url(),
             'query' => request()->query(),
         ]);
-
+//        dump($results->toArray());
         return $results;
     }
 
